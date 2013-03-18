@@ -9,15 +9,33 @@
 <body>
 	<div class="header">
 		<div class="logo"></div>
-		<div class="tagline">
-			Share files and talk to people without being tracked down.
-		</div>
 	</div>
 
 	<div class="content">
 		<div class="block">
 			<h2>What is it?</h2>
-			<p>Nightweb connects your Android device to a censorship-free anonymous community. It feels like any other social or file-sharing app, but underneath, everything is being shared with BitTorrent over the I2P network.</p>
+			<p>Nightweb connects your Android device to an anonymous, peer-to-peer social network. You can write posts and share photos, and your followers will retrieve them using BitTorrent running over the I2P anonymous network. It is still experimental and not well-tested, but the goal is to have uncensorable, untraceable communication and file-sharing on mobile devices.</p>
+		</div>
+		<div class="block">
+			<h2>How does it work?</h2>
+			<p>When you launch the app, it starts up I2P in the background and creates your user account, which is simply a key stored on your device. When you edit your profile or write a post, it saves them and begins sharing them in a torrent. Anyone following you will join the swarm to download your content. When you update anything, they are notified and grab whatever is new.</p>
+		</div>
+		<div class="block">
+			<h2>How does it avoid spam?</h2>
+			<p>You only retrieve content from users you favorite, as well as users they favorite. This "friends-of-friends" model helps you find new content, but avoids the chaos of a completely free-for-all metadata system like Gnutella's. By sharing your metadata in a torrent, it also avoids BitTorrent's weakest link -- the need to have a central server to search and browse content.</p>
+		</div>
+		<div class="block">
+			<h2>How do I get followers?</h2>
+			<p>For users to find you initially, you will need to give them a link to your page. To get your link, just go to your user page and hit the share button on the top right. After sharing it, users with Android devices can tap and open it in the Nightweb app. Nightweb makes it a normal-looking HTTP link so (1) it will be clickable when you paste it in an email or web page, and (2) users who don't have Nightweb installed will end up on this page. Here's an example:</p>
+			<code><a href="http://nightweb.net#type=user&userhash=zc3bf63ca7p756p5lffnypyzbo53qtzb">http://nightweb.net#type=user&userhash=zc3bf63ca7p756p5lffnypyzbo53qtzb</a></code>
+		</div>
+		<div class="block">
+			<h2>Why Android?</h2>
+			<p>The goal of Nightweb is to be a "killer app" for anonymous networking; to make it a more mainstream technology. With this in mind, it is important to go where the users are going, which is mobile. Android is the best mobile OS for this, because (1) it allows generic, long-running background services, (2) it is API-compatible with Java so I2P runs on it perfectly, and (3) it allows sideloading apps, so the app can always be distributed.</p>
+		</div>
+		<div class="block">
+			<h2>Why Clojure?</h2>
+			<p>Clojure is more fun to code in than Java, which is an important quality for projects I am not paid to work on. The Android API and the I2P project are written in Java, but Clojure interops with them easily. Its biggest pragmatic benefit is that it simplifies concurrency. This isn't a big deal right now, since Clojure is primarily being used on the frontend, but it will pay big dividends later if I need to rewrite parts of the I2P backend.</p>
 		</div>
 	</div>
 </body>
