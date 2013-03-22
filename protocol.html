@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Nightweb Protocol</title>
+	<link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+
+<body>
+
+	<div class="header">
+		<div class="logo"></div>
+	</div>
+
+	<div class="content">
+		<div class="block">
+			<h2>Nightweb Protocol</h2>
+			<p>This page will attempt to give an informal explanation of the Nightweb protocol. It will not discuss the internals of I2P or BitTorrent, upon which it is built, as they are already better-explained elsewhere.</p>
+			<p>Nightweb starts its life by generating a DSA-SHA1 key pair, which represents your user on the network. They are saved to the disk as bencoded files, which is Nightweb's serialization scheme of choice as it is consistent with BitTorrent and supports binary data. The signing algorithm was chosen to be consistent with I2P, but once they upgrade to a newer standard, Nightweb can easily upgrade as well.</p>
+			<p>A torrent file is then created to share your public key. Logically enough, this is called your public key torrent. The infohash of this torrent will then be your userhash; it will be encoded in base32 and appear in the link you share with your friends. With this hash, anyone can retrieve your public key by querying for it over the BitTorrent DHT (Distributed Hash Table) network. Nightweb uses the DHT protocol exclusively; there are no trackers in use at all.</p>
+			<p>The next step is actually sharing your content with these followers. All information, including your profile, posts, and pictures, are saved in a single directory called "meta". A torrent file is then created to share this directory, which is called your meta torrent. The tricky part, which the Nightweb protocol solves, is how do you notify your followers to download this torrent, and how do you update it when you want to share new content?</p>
+			<p>The answer is to send a message to all the peers in your public key torrent, indicating the infohash of your meta torrent. Over the BitTorrent DHT, they can then find the torrent and download it. The message is sent over KRPC, the same protocol BitTorrent uses for all DHT messages. All that was necessary is adding a new query to the ones listed in BEP 0005, which I call announce_meta.</p>
+			<p>This new query type includes the infohash of the meta torrent, a timestamp of when it was created, your userhash, and a signature of the previous information. The data they receive in this query is called a meta link. The signature is checked using the public key the clients have already downloaded. If the timestamp is newer than the meta link they already have, they begin retrieving the included infohash from the DHT; otherwise, they respond with their own meta link.</p>
+			<p>Every time you change your metadata, such as writing a new post, you will create a new meta torrent and send the meta link to all the peers you see in your public key torrent. They will continuously download the latest meta torrent on top of the previous one, and will share your meta link to the peers they see. Eventually, all your followers, even if not directly connected to you in the BitTorrent swarm, will get the latest meta link and download the corresponding meta torrent.</p>
+			<p>Currently, there are four types of files saved in a meta torrent: your profile, pictures, posts, and favorites. The first is saved at the root of your "meta" directory, as you only need one, and the last three are saved as discrete files inside the directories "pic", "post", and "fav" respectively. The filenames for pictures are always the base32-encoded SHA1 hash of their contents, while for posts and favs they are the timestamp (in milliseconds) of when they were created.</p>
+			<p>The rest of Nightweb builds upon this simple protocol. To get a better picture of what is going on under the hood, here is a sample of what Nightweb's data directory might look like:</p>
+			<pre>
+	|-- main.h2.db <span class="note">database for storing and indexing all metadata</span>
+	|-- private.node.key <span class="note">the private I2P key</span>
+	|-- public.node.key <span class="note">the public I2P key</span>
+	|-- user.list <span class="note">bencoded list of users you created</span>
+	`-- user/ <span class="note">holds directories for each user you are following</span>
+	    `-- zc3bf63ca7p756p5lffnypyzbo53qtzb/
+	        |-- meta/
+	        |   |-- fav/
+		|   |   |-- 1363918360012
+	        |   |-- pic/
+	        |   |   |-- 32zngzyklwpxd4t33p7h2yovlhzpsn5l
+	        |   |-- post/
+	        |   |   `-- 1363920058418
+	        |   `-- user.profile
+	        |-- meta.link
+	        |-- meta.torrent
+		|-- private.key <span class="note">this only exists in your own user's dir</span>
+	        |-- public.key
+	        `-- public.key.torrent
+			</pre>
+		</div>
+	</div>
+</body>
+
+</html>

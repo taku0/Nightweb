@@ -31,3 +31,8 @@ a {
 	border-color: #C0C0C0;
 	border-width: 1px;
 }
+
+.note {
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	color: yellow;
+}
