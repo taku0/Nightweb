@@ -14,7 +14,10 @@ a {
 	margin: auto;
 	margin-top: 64px;
 	margin-bottom: 64px;
-	background-image: url('moon-light.png');
+}
+
+.logo:hover {
+	opacity: 0.5;
 }
 
 .content {
